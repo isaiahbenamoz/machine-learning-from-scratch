@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 import seaborn as sns
-import pandas as pd
 
 
 class LogisticRegression:
@@ -23,6 +23,7 @@ class LogisticRegression:
         self.epochs = epochs
         self.learning_rate = learning_rate
         self.epsilon = 1e-10
+        self.parameters = []
 
     def cost(self, x, y):
         """
@@ -48,9 +49,13 @@ class LogisticRegression:
         """
         :param x: the data which we would like to make a prediction about
         :param y: the ground truth labels corresponding to our input data
+        :return: a list of the Ws and bs for all epochs
         """
         # initialize W to the correct dimensions
         self.W = np.zeros((1, x.shape[0]))
+
+        # initialize dW and db
+        dW, db = np.zeros((1, x.shape[0])), 0.0
 
         # run gradient descent for the given number of epochs
         for epoch in range(self.epochs):
@@ -61,6 +66,9 @@ class LogisticRegression:
             self.W -= self.learning_rate * dW
             self.b -= self.learning_rate * db
 
+            # add the parameters to the parameters list
+            self.parameters.append((self.W, self.b))
+
             # if the current epoch number is a multiple of the number of epochs / 10
             if epoch % (self.epochs // 10) == 0:
                 # print the cost function with out current model
@@ -69,11 +77,23 @@ class LogisticRegression:
         print('dW:', dW)
         print('db:', db)
 
-    def predict(self, x):
+    def predict(self, x, W=None, b=None):
         """
         :param x: the data which we would like to make a prediction about
+        :param W: an optional parameter to specify W for the prediction
+        :param b: an optional parameter to specify b for the prediction
         :return: the model's prediction, y_hat, for the given x data
         """
+        # if W and b are defined, use them to make the prediction
+        if W and b:
+            return self.sigmoid(W @ x + b)
+
+        # if W is not defined because the model has not been trained
+        if not self.W:
+            # raise a RuntimeError
+            raise RuntimeError('Training is required before a prediction can be made.')
+
+        # otherwise, use the parameters from the saved model
         return self.sigmoid(self.W @ x + self.b)
 
     @staticmethod
@@ -96,10 +116,10 @@ class LogisticRegression:
         fig = plt.figure()
 
         # create a scatter plot with the given x and y coordinate data
-        sns.scatterplot(x.reshape(1, -1)[0], y.reshape(1, -1)[0])
+        sns.scatterplot(x[0], y[0])
 
         # plot the predicted sigmoid curve
-        sns.lineplot(x[0], self.predict(x)[0])
+        sns.lineplot(x[0], self.predict(x)[0], color='red')
 
         # label the x and y coordinates and add the title
         plt.xlabel('x')
@@ -114,8 +134,42 @@ class LogisticRegression:
         if save_loc:
             fig.savefig(save_loc, dpi=dpi)
 
-    def animate(self):
-        pass
+    def animate(self, x, y, show=True, save_loc='', dpi=150):
+        """
+        :param x: the data which we would like to make a prediction about
+        :param y: the ground truth labels corresponding to our input data
+        :param show: a boolean value indicating whether to show the animation
+        :param save_loc: the location where the the user would like to save the animation
+        :param dpi: the pixel density of the graph being saved
+        """
+        # create the figure we'll use to create the animation
+        fig, ax = plt.subplots()
+
+        # create a scatter plot of our data
+        sns.scatterplot(x[0], y[0])
+
+        # label the x and y axises and add a title to the plot
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Logistic Regression')
+
+        # plot an initial red line and save it as a variable
+        line, = ax.plot(x[0], self.predict(x[0]), 'r-')
+
+        # create an update function that
+        def update(parameters):
+            line.set_ydata(self.predict(x, *parameters))
+            return line, ax
+
+        # if a save location is defined
+        if save_loc:
+            predictions = np.ndarray([self.predict(x, y, W, b) for W, b in self.parameters])
+            print(predictions)
+            anim = FuncAnimation(fig, update, frames=predictions, interval=50)
+            anim.save(save_loc, dpi=dpi, writer='imagemagick')
+
+        if show:
+            plt.show()
 
 
 if __name__ == '__main__':
@@ -135,5 +189,6 @@ if __name__ == '__main__':
     print(x_.shape, y_.shape)
 
     lr = LogisticRegression(1.0)
-    lr.fit(x_, y_)
-    lr.plot(x_, y_)
+    lr.fit(x_, y_ > 0.5)
+    lr.plot(x_, y_ > 0.5)
+    lr.animate(x_, y_, show=True, save_loc='logistic.gif', dpi=150)
