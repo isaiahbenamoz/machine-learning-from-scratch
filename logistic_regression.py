@@ -11,13 +11,13 @@ class LogisticRegression:
     malignant or non-malignant).
     """
 
-    def __init__(self, c=1.0, epochs=1000, learning_rate=0.0025):
+    def __init__(self, lambda_=0.0, epochs=1000, learning_rate=0.3):
         """
         :param c: the weight assigned to the non-regularized portion of the cost function
         :param epochs: the number of iterations that gradient descent will run
         :param learning_rate: a scalar that adjusts how quickly W and b are adjusted
         """
-        self.C = c
+        self.lambda_ = lambda_
         self.W = None
         self.b = 0.0
         self.epochs = epochs
@@ -32,7 +32,9 @@ class LogisticRegression:
         :return: the log loss cost function of our model
         """
         y_pred = self.predict(x)
-        return self.C * (y * np.log(y_pred + self.epsilon) + (1 - y) * np.log(1 - y_pred + self.epsilon)).mean()
+        cost = -(y * np.log(y_pred + self.epsilon) + (1 - y) * np.log(1 - y_pred + self.epsilon)).mean()
+        regularize = (self.lambda_ / 2) * (self.W ** 2).mean()
+        return cost + regularize
 
     def gradient(self, x, y):
         """
@@ -41,8 +43,8 @@ class LogisticRegression:
         :return: the gradient of the cost function with respect to W and b
         """
         y_hat = self.predict(x)
-        dW = self.C * (x * (y - y_hat)).mean(axis=1)
-        db = (y - y_hat).mean()
+        dW = -(x * (y - y_hat)).mean(axis=1) + (self.lambda_ * self.W)
+        db = -(y - y_hat).mean()
         return dW, db
 
     def fit(self, x, y):
@@ -52,7 +54,7 @@ class LogisticRegression:
         :return: a list of the Ws and bs for all epochs
         """
         # initialize W to the correct dimensions
-        self.W = np.zeros((1, x.shape[0]))
+        self.W = np.random.randn(*(1, x.shape[0]))
 
         # initialize dW and db
         dW, db = np.zeros((1, x.shape[0])), 0.0
@@ -85,11 +87,11 @@ class LogisticRegression:
         :return: the model's prediction, y_hat, for the given x data
         """
         # if W and b are defined, use them to make the prediction
-        if W and b:
+        if not (W is None or b is None):
             return self.sigmoid(W @ x + b)
 
         # if W is not defined because the model has not been trained
-        if not self.W:
+        if self.W is None:
             # raise a RuntimeError
             raise RuntimeError('Training is required before a prediction can be made.')
 
@@ -118,8 +120,11 @@ class LogisticRegression:
         # create a scatter plot with the given x and y coordinate data
         sns.scatterplot(x[0], y[0])
 
+        # create the domain over which the logistic regression will be plotted
+        domain = np.linspace(np.min(x) - 1, np.max(x) + 1, 500).reshape(1, -1)
+
         # plot the predicted sigmoid curve
-        sns.lineplot(x[0], self.predict(x)[0], color='red')
+        sns.lineplot(domain[0], self.predict(domain)[0], color='red')
 
         # label the x and y coordinates and add the title
         plt.xlabel('x')
@@ -153,19 +158,20 @@ class LogisticRegression:
         plt.ylabel('y')
         plt.title('Logistic Regression')
 
+        # create the domain over which the logistic regression will be plotted
+        domain = np.linspace(np.min(x) - 1, np.max(x) + 1, 500).reshape(1, -1)
+
         # plot an initial red line and save it as a variable
-        line, = ax.plot(x[0], self.predict(x[0]), 'r-')
+        line, = ax.plot(domain[0], self.predict(domain, *self.parameters[0])[0], 'r-')
 
         # create an update function that
         def update(parameters):
-            line.set_ydata(self.predict(x, *parameters))
+            line.set_ydata(self.predict(domain, *parameters))
             return line, ax
 
         # if a save location is defined
         if save_loc:
-            predictions = np.ndarray([self.predict(x, y, W, b) for W, b in self.parameters])
-            print(predictions)
-            anim = FuncAnimation(fig, update, frames=predictions, interval=50)
+            anim = FuncAnimation(fig, update, frames=self.parameters[::10], interval=50)
             anim.save(save_loc, dpi=dpi, writer='imagemagick')
 
         if show:
@@ -174,7 +180,7 @@ class LogisticRegression:
 
 if __name__ == '__main__':
     # The desired mean values of the sample.
-    mu = np.array([0.0, 1.0])
+    mu = np.array([0.0, -0.5])
 
     # The desired covariance matrix.
     r = np.array([
@@ -183,12 +189,15 @@ if __name__ == '__main__':
         ])
 
     # Generate the random samples.
-    data = np.random.multivariate_normal(mu, r, size=1000)
+    data = np.random.multivariate_normal(mu, r, size=60)
     x_ = data[:, 0].reshape(1, -1)
     y_ = data[:, 1].reshape(1, -1)
     print(x_.shape, y_.shape)
 
-    lr = LogisticRegression(1.0)
-    lr.fit(x_, y_ > 0.5)
-    lr.plot(x_, y_ > 0.5)
-    lr.animate(x_, y_, show=True, save_loc='logistic.gif', dpi=150)
+    choices = y_ > np.random.normal(size=y_.shape, scale=0.4)
+    choices = y_ > 0.5
+
+    lr = LogisticRegression(0.01)
+    lr.fit(x_, choices)
+    lr.plot(x_.copy(), choices)
+    lr.animate(x_.copy(), choices, show=True, save_loc='logistic.gif', dpi=150)
