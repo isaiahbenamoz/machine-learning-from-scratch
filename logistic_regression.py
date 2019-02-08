@@ -13,7 +13,7 @@ class LogisticRegression:
 
     def __init__(self, lambda_=0.0, epochs=1000, learning_rate=0.3):
         """
-        :param c: the weight assigned to the non-regularized portion of the cost function
+        :param lambda_: the weight assigned to the regularized portion of the cost function
         :param epochs: the number of iterations that gradient descent will run
         :param learning_rate: a scalar that adjusts how quickly W and b are adjusted
         """
@@ -54,7 +54,10 @@ class LogisticRegression:
         :return: a list of the Ws and bs for all epochs
         """
         # initialize W to the correct dimensions
-        self.W = np.random.randn(*(1, x.shape[0]))
+        self.W = np.zeros((1, x.shape[0]))
+
+        # TODO: remove
+        print(x.shape, self.W.shape, y.shape)
 
         # initialize dW and db
         dW, db = np.zeros((1, x.shape[0])), 0.0
@@ -106,7 +109,7 @@ class LogisticRegression:
         """
         return 1 / (1 + np.exp(-z))
 
-    def plot(self, x, y, show=True, save_loc='', dpi=150):
+    def plot_1d(self, x, y, show=True, save_loc='', dpi=150):
         """
         :param x: the data which we would like to make a prediction about
         :param y: the ground truth labels corresponding to our input data
@@ -114,6 +117,9 @@ class LogisticRegression:
         :param save_loc: the location where the the user would like to save the graph
         :param dpi: the pixel density of the graph being saved
         """
+        if x.shape[0] != 1:
+            raise RuntimeError('In order to create this plot x must 1 dimensional.')
+
         # create a figure for saving
         fig = plt.figure()
 
@@ -139,7 +145,54 @@ class LogisticRegression:
         if save_loc:
             fig.savefig(save_loc, dpi=dpi)
 
-    def animate(self, x, y, show=True, save_loc='', dpi=150):
+    def plot_2d(self, x, y, show=True, save_loc='', dpi=150):
+        """
+        :param x: the data which we would like to make a prediction about
+        :param y: the ground truth labels corresponding to our input data
+        :param show: a boolean value indicating whether to show the plot
+        :param save_loc: the location where the the user would like to save the graph
+        :param dpi: the pixel density of the graph being saved
+        """
+        if x.shape[0] != 2:
+            raise RuntimeError('In order to create this plot, x must be two dimensional.')
+
+        # create a figure for saving
+        fig = plt.figure()
+
+        import pandas as pd
+
+        df = pd.DataFrame()
+        df['x1'] = x[0, :]
+        df['x2'] = x[1, :]
+        df['y'] = y[0]
+
+        # create a scatter plot with the given x and y coordinate data
+        sns.scatterplot(data=df, x='x1', y='x2', hue='y')
+
+        # define the function to find x2 from x1
+        def calc_x2(x1_):
+            return -(self.W[0][0] * x1_ + self.b) / self.W[0][1]
+
+        # create the domain over which the logistic regression will be plotted
+        x1 = np.linspace(np.min(x[0, :]), np.max(x[0, :]), 500).reshape(1, -1)
+
+        # plot the predicted sigmoid curve
+        sns.lineplot(x1[0], calc_x2(x1)[0], color='green')
+
+        # label the x and y coordinates and add the title
+        plt.xlabel('x1')
+        plt.ylabel('x2')
+        plt.title('Logistic Regression')
+
+        # show the plot if specified
+        if show:
+            plt.show()
+
+        # if the user gave a save location, save the plot
+        if save_loc:
+            fig.savefig(save_loc, dpi=dpi)
+
+    def animate_1d(self, x, y, show=True, save_loc='', dpi=150):
         """
         :param x: the data which we would like to make a prediction about
         :param y: the ground truth labels corresponding to our input data
@@ -147,6 +200,9 @@ class LogisticRegression:
         :param save_loc: the location where the the user would like to save the animation
         :param dpi: the pixel density of the graph being saved
         """
+        if x.shape[0] != 1:
+            raise RuntimeError('In order to create this plot x must 1 dimensional.')
+
         # create the figure we'll use to create the animation
         fig, ax = plt.subplots()
 
@@ -177,27 +233,71 @@ class LogisticRegression:
         if show:
             plt.show()
 
+    def animate_2d(self, x, y, show=True, save_loc='', dpi=150):
+        """
+        :param x: the data which we would like to make a prediction about
+        :param y: the ground truth labels corresponding to our input data
+        :param show: a boolean value indicating whether to show the animation
+        :param save_loc: the location where the the user would like to save the animation
+        :param dpi: the pixel density of the graph being saved
+        """
+        if x.shape[0] != 2:
+            raise RuntimeError('In order to create this plot, x must be two dimensional.')
+
+        # create the figure we'll use to create the animation
+        fig, ax = plt.subplots()
+
+        # create a figure for saving
+        fig = plt.figure()
+
+        import pandas as pd
+
+        df = pd.DataFrame()
+        df['x1'] = x[0, :]
+        df['x2'] = x[1, :]
+        df['y'] = y[0]
+
+        # create a scatter plot with the given x and y coordinate data
+        sns.scatterplot(data=df, x='x1', y='x2', hue='y')
+
+        # label the x and y axises and add a title to the plot
+        plt.xlabel('x1')
+        plt.ylabel('x2')
+        plt.title('Logistic Regression')
+
+        # create the domain over which the logistic regression will be plotted
+        domain = np.linspace(np.min(x[0, :]), np.max(x[0, :]), 500).reshape(1, -1)
+
+        # define the function to find x2 from x1
+        def calc_x2(x1_, W, b):
+            return -(W[0][0] * x1_ + b) / W[0][1]
+
+        # plot an initial red line and save it as a variable
+        line, = ax.plot(domain[0], calc_x2(domain, *self.parameters[0])[0], 'r-')
+
+        # create an update function that
+        def update(parameters):
+            line.set_ydata(calc_x2(domain, *parameters))
+            return line, ax
+
+        # if a save location is defined
+        if save_loc:
+            anim = FuncAnimation(fig, update, frames=self.parameters[::10], interval=50)
+            anim.save(save_loc, dpi=dpi, writer='imagemagick')
+
+        if show:
+            plt.show()
+
 
 if __name__ == '__main__':
-    # The desired mean values of the sample.
-    mu = np.array([0.0, -0.5])
 
-    # The desired covariance matrix.
-    r = np.array([
-            [1.00, 0.99],
-            [0.99, 1.00]
-        ])
+    from sklearn.datasets.samples_generator import make_blobs
+    x_, y_ = make_blobs(n_samples=200, centers=2, n_features=2, random_state=4563, cluster_std=2.0)
+    x_ = x_.T.reshape(2, -1)
+    y_ = y_.reshape(1, -1)
 
-    # Generate the random samples.
-    data = np.random.multivariate_normal(mu, r, size=60)
-    x_ = data[:, 0].reshape(1, -1)
-    y_ = data[:, 1].reshape(1, -1)
-    print(x_.shape, y_.shape)
+    lr = LogisticRegression(0.1)
+    lr.fit(x_, y_)
+    lr.plot_2d(x_, y_, save_loc='logistic.png')
+    lr.animate_2d(x_, y_, save_loc='logistic.gif')
 
-    choices = y_ > np.random.normal(size=y_.shape, scale=0.4)
-    choices = y_ > 0.5
-
-    lr = LogisticRegression(0.01)
-    lr.fit(x_, choices)
-    lr.plot(x_.copy(), choices)
-    lr.animate(x_.copy(), choices, show=True, save_loc='logistic.gif', dpi=150)
