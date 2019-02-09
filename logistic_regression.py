@@ -244,5 +244,5 @@ if __name__ == '__main__':
 
     lr = LogisticRegression(lambda_=0.0, learning_rate=0.1)
     lr.fit(x_, y_)
-    lr.plot_2d(x_, y_, save_loc='logistic.png')
+    lr.plot_2d(x_, y_)
 
