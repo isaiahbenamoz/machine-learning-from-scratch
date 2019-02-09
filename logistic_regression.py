@@ -11,7 +11,7 @@ class LogisticRegression:
     malignant or non-malignant).
     """
 
-    def __init__(self, lambda_=0.0, epochs=1000, learning_rate=0.3):
+    def __init__(self, lambda_=0.0, epochs=1000, learning_rate=0.003):
         """
         :param lambda_: the weight assigned to the regularized portion of the cost function
         :param epochs: the number of iterations that gradient descent will run
@@ -56,14 +56,20 @@ class LogisticRegression:
         # initialize W to the correct dimensions
         self.W = np.zeros((1, x.shape[0]))
 
-        # TODO: remove
-        print(x.shape, self.W.shape, y.shape)
-
         # initialize dW and db
         dW, db = np.zeros((1, x.shape[0])), 0.0
 
         # run gradient descent for the given number of epochs
         for epoch in range(self.epochs):
+
+            # if the current epoch number is a multiple of the number of epochs / 10
+            if epoch % (self.epochs // 10) == 0:
+                # print the cost function with out current model
+                print('Epoch #' + str(epoch) + ' loss = ' + str(self.cost(x, y)))
+
+            # add the parameters to the parameters list
+            self.parameters.append((self.W.copy(), self.b))
+
             # compute the gradients given our training data
             dW, db = self.gradient(x, y)
 
@@ -71,16 +77,9 @@ class LogisticRegression:
             self.W -= self.learning_rate * dW
             self.b -= self.learning_rate * db
 
-            # add the parameters to the parameters list
-            self.parameters.append((self.W, self.b))
-
-            # if the current epoch number is a multiple of the number of epochs / 10
-            if epoch % (self.epochs // 10) == 0:
-                # print the cost function with out current model
-                print('Epoch #' + str(epoch) + ' loss = ' + str(self.cost(x, y)))
-
-        print('dW:', dW)
-        print('db:', db)
+        print('\nW:', self.W)
+        print('b:', self.b)
+        print('c:', self.cost(x, y), '\n')
 
     def predict(self, x, W=None, b=None):
         """
@@ -171,7 +170,9 @@ class LogisticRegression:
 
         # define the function to find x2 from x1
         def calc_x2(x1_):
-            return -(self.W[0][0] * x1_ + self.b) / self.W[0][1]
+            num = -self.W[0][0] * x1_ - self.b
+            denom = self.W[0][1]
+            return num / denom
 
         # create the domain over which the logistic regression will be plotted
         x1 = np.linspace(np.min(x[0, :]), np.max(x[0, :]), 500).reshape(1, -1)
@@ -233,71 +234,15 @@ class LogisticRegression:
         if show:
             plt.show()
 
-    def animate_2d(self, x, y, show=True, save_loc='', dpi=150):
-        """
-        :param x: the data which we would like to make a prediction about
-        :param y: the ground truth labels corresponding to our input data
-        :param show: a boolean value indicating whether to show the animation
-        :param save_loc: the location where the the user would like to save the animation
-        :param dpi: the pixel density of the graph being saved
-        """
-        if x.shape[0] != 2:
-            raise RuntimeError('In order to create this plot, x must be two dimensional.')
-
-        # create the figure we'll use to create the animation
-        fig, ax = plt.subplots()
-
-        # create a figure for saving
-        fig = plt.figure()
-
-        import pandas as pd
-
-        df = pd.DataFrame()
-        df['x1'] = x[0, :]
-        df['x2'] = x[1, :]
-        df['y'] = y[0]
-
-        # create a scatter plot with the given x and y coordinate data
-        sns.scatterplot(data=df, x='x1', y='x2', hue='y')
-
-        # label the x and y axises and add a title to the plot
-        plt.xlabel('x1')
-        plt.ylabel('x2')
-        plt.title('Logistic Regression')
-
-        # create the domain over which the logistic regression will be plotted
-        domain = np.linspace(np.min(x[0, :]), np.max(x[0, :]), 500).reshape(1, -1)
-
-        # define the function to find x2 from x1
-        def calc_x2(x1_, W, b):
-            return -(W[0][0] * x1_ + b) / W[0][1]
-
-        # plot an initial red line and save it as a variable
-        line, = ax.plot(domain[0], calc_x2(domain, *self.parameters[0])[0], 'r-')
-
-        # create an update function that
-        def update(parameters):
-            line.set_ydata(calc_x2(domain, *parameters))
-            return line, ax
-
-        # if a save location is defined
-        if save_loc:
-            anim = FuncAnimation(fig, update, frames=self.parameters[::10], interval=50)
-            anim.save(save_loc, dpi=dpi, writer='imagemagick')
-
-        if show:
-            plt.show()
-
 
 if __name__ == '__main__':
 
     from sklearn.datasets.samples_generator import make_blobs
-    x_, y_ = make_blobs(n_samples=200, centers=2, n_features=2, random_state=4563, cluster_std=2.0)
+    x_, y_ = make_blobs(n_samples=200, centers=2, n_features=2, random_state=19, cluster_std=1.0)
     x_ = x_.T.reshape(2, -1)
     y_ = y_.reshape(1, -1)
 
-    lr = LogisticRegression(0.1)
+    lr = LogisticRegression(lambda_=0.0, learning_rate=0.1)
     lr.fit(x_, y_)
     lr.plot_2d(x_, y_, save_loc='logistic.png')
-    lr.animate_2d(x_, y_, save_loc='logistic.gif')
 
