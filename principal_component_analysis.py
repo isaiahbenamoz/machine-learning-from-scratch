@@ -21,7 +21,7 @@ class PrincipalComponentAnalysis:
         :param x: the data that our model fits to
         """
         # normalize the rows (features) of x to have mean zero
-        z = x - x.mean(axis=1).reshape(x.shape[0], -1)
+        z = self.normalize(x)
 
         # calculate the covariance matrix for z
         z = self.covariance(z)
@@ -33,7 +33,7 @@ class PrincipalComponentAnalysis:
         v = v[:, idx]
 
         # save the calculated principal components
-        self.components = z @ v
+        self.components = v.copy()
 
         # save the eigenvalues
         self.explained_variance = w
@@ -44,7 +44,9 @@ class PrincipalComponentAnalysis:
         :param x: the data to be transformed
         :return: the data in a k-dimensional space where k is less than the original dimension of x
         """
-        return self.components[:self.num_components, :] @ x
+        # normalize x
+        z = self.normalize(x)
+        return self.components.T[:self.num_components, :] @ z
 
     def plot_variance(self):
         """
@@ -68,6 +70,9 @@ class PrincipalComponentAnalysis:
         plt.xlabel('Principal components')
         plt.legend(loc='best')
 
+        # show the plot
+        plt.show()
+
     def plot_2d(self, x):
         """
         Plot a scatter with the orthogonal principal components.
@@ -81,6 +86,14 @@ class PrincipalComponentAnalysis:
 
         # show the plot
         plt.show()
+
+    @staticmethod
+    def normalize(x):
+        return x - x.mean(axis=1).reshape(x.shape[0], 1)
+
+    def fit_transform(self, x):
+        self.fit(x)
+        return self.transform(x)
 
     @staticmethod
     def covariance(z):
@@ -111,7 +124,15 @@ if __name__ == '__main__':
         y = y[:, 2].T
 
         return x, y
+
     x, y = generate_data()
-    pca = PrincipalComponentAnalysis(1)
-    pca.fit(x)
-    pca.plot_variance()
+
+    pca = PrincipalComponentAnalysis(2)
+    z = pca.fit_transform(x)
+    pca.plot_2d(x)
+    plt.scatter(z[0], z[1])
+
+    from sklearn.decomposition import pca
+    z = pca.PCA(2).fit_transform(x.T)
+    plt.scatter(z[:, 0], z[:, 1])
+    plt.show()
