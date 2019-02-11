@@ -1,4 +1,4 @@
-# Machine Learning Models
+# 🤖 Machine Learning Models
 > A collection of machine learning models implemented from scratch
 
 ## Motivatoin
