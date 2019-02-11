@@ -1,7 +1,7 @@
 # 🤖 Machine Learning Models
 > A collection of machine learning models implemented from scratch
 
-## Motivatoin
+## Motivation
 The models implemented here are for my own learning purposes and that of others. They are not in any way for professional use.
 
 ## Associated Blog Posts
