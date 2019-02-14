@@ -168,6 +168,7 @@ class NeuralNetwork:
         :param b_l: the bias terms for the current layer
         :type b_l: np.array
         :return: z_l
+        :rtype np.array
         """
         return w_l @ a_l_prev + b_l
 
@@ -180,6 +181,7 @@ class NeuralNetwork:
         :param activation: the activation function specified
         :type activation: str
         :return a_l: the activation for the current layer
+        :rtype np.array
         """
         if activation == 'relu':
             return np.where(z_l > 0, z_l, z_l * 0.01)
@@ -189,7 +191,7 @@ class NeuralNetwork:
             return np.tanh(z_l)
 
     @staticmethod
-    def loss_forward(y_hat: np.array, y: np.array, loss: np.array) -> np.array:
+    def loss_forward(y_hat, y, loss):
         """
         Compute the model's loss.
         :param y_hat: the model's predictions for y
@@ -273,6 +275,7 @@ class NeuralNetwork:
         :param activation: the activation function used at the current layer
         :type activation: str
         :return: dz for the current layer
+        :rtype np.array
         """
         if activation == 'relu':
             g = np.ones_like(z_l)
@@ -295,6 +298,7 @@ class NeuralNetwork:
         :param a_l_prev: the activation value for layer l
         :type a_l_prev: np.array
         :return: dw and db for the current layer; da for the previous layer
+        :rtype np.array
         """
         # calculate dw for the current layer
         dw_l = (dz_l @ a_l_prev.T) / a_l_prev.shape[1]
@@ -345,17 +349,6 @@ if __name__ == '__main__':
     plt.scatter(x_train[0], x_train[1], c=y_train[0])
     plt.title('ground')
     plt.show()
-
-    # from keras.datasets import mnist
-    # from keras.utils import to_categorical
-
-    # (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    #
-    # x_train = x_train.reshape(x_train.shape[0], -1).T[:, :10]
-    # y_train = to_categorical(y_train).T[:, :10]
-    #
-    # x_test = x_test.reshape(x_test.shape[0], -1).T[:, :1000]
-    # y_test = to_categorical(y_test).T[:, :1000]
 
     nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'relu'], 'mean_squared_error')
     nn.train(x_train, y_train, learning_rate=0.01)
