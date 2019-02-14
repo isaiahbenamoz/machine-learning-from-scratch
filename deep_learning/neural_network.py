@@ -356,7 +356,7 @@ if __name__ == '__main__':
     nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'sigmoid'], 'mean_squared_error')
     nn.train(x_train, y_train, learning_rate=0.01)
     y_pred = nn.predict(x_train)
-    
+
     plt.title('custom')
     plt.scatter(x_train[0], x_train[1], c=y_pred[0])
     plt.show()
