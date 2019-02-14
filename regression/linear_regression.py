@@ -34,7 +34,7 @@ class LinearRegression:
             The ground truth results
         :return: the cost of our model for a given input (x, y)
         """
-        return ((self.predict(x) - y) ** 2).mean()
+        return ((self.predict(x) - y) ** 2).mean(axis=1, keepdims=True)
 
     def gradient(self, x, y):
         """
