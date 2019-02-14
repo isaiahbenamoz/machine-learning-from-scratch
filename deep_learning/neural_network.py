@@ -82,6 +82,7 @@ class NeuralNetwork:
         :param learning_rate: a scalar that determines how fast the model parameters change
         :type learning_rate: float
         """
+        epoch = 0
         # iterate for the number of epochs
         for epoch in range(epochs):
 
@@ -188,7 +189,7 @@ class NeuralNetwork:
             return np.tanh(z_l)
 
     @staticmethod
-    def loss_forward(y_hat, y, loss):
+    def loss_forward(y_hat: np.array, y: np.array, loss: np.array) -> np.array:
         """
         Compute the model's loss.
         :param y_hat: the model's predictions for y
@@ -198,6 +199,7 @@ class NeuralNetwork:
         :param loss: the loss function specified
         :type loss: str
         :return L: the model's loss
+        :rtype: np.array
         """
         if loss == 'mean_squared_error':
             return (0.5 * (y_hat - y) ** 2).mean()
@@ -328,8 +330,8 @@ if __name__ == '__main__':
 
         return x, y
 
-    x, y = generate_data(200)
-    y = (1 / (1 + np.exp(-y))).reshape(1, -1)
+    x_train, y_train = generate_data(200)
+    y_train = (1 / (1 + np.exp(-y_train))).reshape(1, -1)
 
     # x = np.array([
     #     [0, 0, 1, 1],
@@ -340,7 +342,7 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
 
-    plt.scatter(x[0], x[1], c=y[0])
+    plt.scatter(x_train[0], x_train[1], c=y_train[0])
     plt.title('ground')
     plt.show()
 
@@ -356,10 +358,9 @@ if __name__ == '__main__':
     # y_test = to_categorical(y_test).T[:, :1000]
 
     nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'relu'], 'mean_squared_error')
-    nn.train(x, y, learning_rate=0.01)
-    y_hat = nn.predict(x)
+    nn.train(x_train, y_train, learning_rate=0.01)
+    y_pred = nn.predict(x_train)
 
     plt.title('custom')
-    plt.scatter(x[0], x[1], c=y_hat[0])
+    plt.scatter(x_train[0], x_train[1], c=y_pred[0])
     plt.show()
-
