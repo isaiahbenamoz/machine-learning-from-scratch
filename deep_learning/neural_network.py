@@ -16,6 +16,7 @@ class NeuralNetwork:
         :type activations: list[str]
         :param loss: a string indicating the loss function to be used
         :type loss: str
+        :rtype: None
         """
         # if any model input constraints are not met, then raise an error
         if len(nodes) != len(activations):
@@ -46,9 +47,12 @@ class NeuralNetwork:
         self.initialize_parameters()
 
     def predict(self, x):
-        """
+        """ Use the model to predict y_hat for the given x values.
+
         :param x: the data for which y_hat would like to predicted
-        :type x: np.array
+        :type x: np.ndarray
+        :returns: the model's predictions, y_hat
+        :rtype: np.ndarray
         """
         # initialize the first activation layer to be x
         a_l_prev = x
@@ -71,18 +75,17 @@ class NeuralNetwork:
         return a_l_prev
 
     def train(self, x, y, epochs=1000, learning_rate=0.01):
-        """
-        Trains the model on the data (x, y).
+        """ Trains the model on the data (x, y).
+
         :param x: the input training data that predicts y
-        :type x: np.array
+        :type x: np.ndarray
         :param y: the ground truth values corresponding to x
-        :type y: np.array
+        :type y: np.ndarray
         :param epochs: the number of times iterated over the dataset
         :type epochs: int
         :param learning_rate: a scalar that determines how fast the model parameters change
         :type learning_rate: float
         """
-        epoch = 0
         # iterate for the number of epochs
         for epoch in range(epochs):
 
@@ -106,12 +109,10 @@ class NeuralNetwork:
         # compute the cost for the final model
         cost = self.loss_forward(self.predict(x), y, self.loss)
         # print out the cost for the last epoch
-        print('Epoch #', epoch, 'cost:', cost)
+        print('Epoch #', epochs, 'cost:', cost)
 
     def initialize_parameters(self):
-        """
-        Initialize the models parameters for the relu activation function.
-        """
+        """ Initialize the models parameters for the relu activation function. """
         # iterate over each layer as defined the length of num_nodes
         for layer in range(1, self.num_layers + 1):
             # initialize w_i and b_i
@@ -123,8 +124,8 @@ class NeuralNetwork:
             self.parameters['w' + str(layer)] = w_l
 
     def update_parameters(self, learning_rate):
-        """
-        Update the parameters according to the derivatives calculated during back propagation.
+        """ Update the parameters according to the derivatives calculated during back propagation.
+
         :param learning_rate: a scalar that determines how fast the model parameters change
         :type learning_rate: float
         """
@@ -134,10 +135,10 @@ class NeuralNetwork:
             self.parameters['b' + str(layer)] -= learning_rate * self.gradients['db' + str(layer)]
 
     def forward_propagate(self, x):
-        """
-        Runs forward propagation storing z and a for each layer.
+        """ Runs forward propagation storing z and a for each layer.
+
         :param x: the input training data that predicts y
-        :type x: np.array
+        :type x: np.ndarray
         """
         # initialize the first activation layer to x
         self.cache = {'a0': x}
@@ -159,29 +160,29 @@ class NeuralNetwork:
 
     @staticmethod
     def linear_forward(w_l, a_l_prev, b_l):
-        """
-        Compute z for the current layer.
+        """ Compute z for the current layer.
+
         :param w_l: the weights for the current layer
-        :type w_l: np.array
+        :type w_l: np.ndarray
         :param a_l_prev: the previous layer's activation
-        :type w_l: np.array
+        :type a_l_prev: np.ndarray
         :param b_l: the bias terms for the current layer
-        :type b_l: np.array
-        :return: z_l
-        :rtype np.array
+        :type b_l: np.ndarray
+        :return: the z value for the current layer
+        :rtype: np.ndarray
         """
         return w_l @ a_l_prev + b_l
 
     @staticmethod
     def nonlinear_forward(z_l, activation):
-        """
-        Compute the activation for the current layer.
+        """ Compute the activation for the current layer.
+
         :param z_l: the value computed by linear forward propagation
-        :type z_l: np.array
+        :type z_l: np.ndarray
         :param activation: the activation function specified
         :type activation: str
         :return a_l: the activation for the current layer
-        :rtype np.array
+        :rtype: np.ndarray
         """
         if activation == 'relu':
             return np.where(z_l > 0, z_l, z_l * 0.01)
@@ -192,16 +193,16 @@ class NeuralNetwork:
 
     @staticmethod
     def loss_forward(y_hat, y, loss):
-        """
-        Compute the model's loss.
+        """ Compute the model's loss.
+
         :param y_hat: the model's predictions for y
-        :type y_hat: np.array
+        :type y_hat: np.ndarray
         :param y: the data's ground truth values
-        :type y: np.array
+        :type y: np.ndarray
         :param loss: the loss function specified
         :type loss: str
         :return L: the model's loss
-        :rtype: np.array
+        :rtype: np.ndarray
         """
         if loss == 'mean_squared_error':
             return (0.5 * (y_hat - y) ** 2).mean()
@@ -209,10 +210,10 @@ class NeuralNetwork:
             return (-y * np.log(y_hat) - (1 - y) * np.log(1 - y_hat)).mean()
 
     def backward_propagate(self, y):
-        """
-        Run backward propagation to calculate how to shift W and b for each layer.
+        """ Run backward propagation to calculate how to shift W and b for each layer.
+
         :param y: the data's ground truth values
-        :type y: np.array
+        :type y: np.ndarray
         """
         # extract the models predictions from the cache
         y_hat = self.cache['a' + str(self.num_layers)]
@@ -249,15 +250,16 @@ class NeuralNetwork:
 
     @staticmethod
     def loss_backward(y_hat, y, loss):
-        """
-        Calculate the derivative of the loss function with respect to y_hat.
+        """ Calculate the derivative of the loss function with respect to y_hat.
+
         :param y_hat: the model's predictions for y
-        :type y_hat: np.array
+        :type y_hat: np.ndarray
         :param y: the data's ground truth values
-        :type y: np.array
+        :type y: np.ndarray
         :param loss: the loss function specified
         :type loss: str
-        :return:
+        :returns: the derivative of the loss function with respect to y_hat
+        :rtype: np.ndarray
         """
         if loss == 'mean_squared_error':
             return y_hat - y
@@ -266,16 +268,16 @@ class NeuralNetwork:
 
     @staticmethod
     def nonlinear_backward(da_l, z_l, activation):
-        """
-        Calculate the derivative of the loss function with respect to z for the current layer.
+        """ Calculate the derivative of the loss function with respect to z for the current layer.
+
         :param da_l: the derivative of the loss function with respect to da at the current layer
-        :type da_l: np.array
+        :type da_l: np.ndarray
         :param z_l: the z value for the current layer
-        :type z_l: np.array
+        :type z_l: np.ndarray
         :param activation: the activation function used at the current layer
         :type activation: str
-        :return: dz for the current layer
-        :rtype np.array
+        :return: the derivative of the loss function with respect to z for the current layer
+        :rtype: np.ndarray
         """
         if activation == 'relu':
             g = np.ones_like(z_l)
@@ -289,16 +291,16 @@ class NeuralNetwork:
 
     @staticmethod
     def linear_backward(dz_l, w_l, a_l_prev):
-        """
-        Calculate the derivative of the loss function with respect to w, b, and a_prev.
+        """ Calculate the derivative of the loss function with respect to w, b, and a_prev.
+
         :param dz_l: the derivative of the loss function with respect to z at layer l
-        :type dz_l: np.array
+        :type dz_l: np.ndarray
         :param w_l: the weights for layer l
-        :type w_l: np.array
+        :type w_l: np.ndarray
         :param a_l_prev: the activation value for layer l
-        :type a_l_prev: np.array
+        :type a_l_prev: np.ndarray
         :return: dw and db for the current layer; da for the previous layer
-        :rtype np.array
+        :rtype: (np.ndarray, np.ndarray, np.ndarray)
         """
         # calculate dw for the current layer
         dw_l = (dz_l @ a_l_prev.T) / a_l_prev.shape[1]
@@ -350,9 +352,11 @@ if __name__ == '__main__':
     plt.title('ground')
     plt.show()
 
+    print(type(x_train))
     nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'relu'], 'mean_squared_error')
     nn.train(x_train, y_train, learning_rate=0.01)
     y_pred = nn.predict(x_train)
+
 
     plt.title('custom')
     plt.scatter(x_train[0], x_train[1], c=y_pred[0])
