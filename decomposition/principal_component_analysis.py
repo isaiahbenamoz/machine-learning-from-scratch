@@ -16,8 +16,8 @@ class PrincipalComponentAnalysis:
         self.explained_variance = None
 
     def fit(self, x):
-        """
-        Fit the transformation to the given x data.
+        """ Fit the transformation to the given x data.
+
         :param x: the data that our model fits to
         """
         # normalize the rows (features) of x to have mean zero
@@ -32,6 +32,9 @@ class PrincipalComponentAnalysis:
         w = w[idx]
         v = v[:, idx]
 
+        # for j, k in enumerate(w):
+        #     v[:, j] *= w[j]
+
         # save the calculated principal components
         self.components = v.copy()
 
@@ -39,8 +42,8 @@ class PrincipalComponentAnalysis:
         self.explained_variance = w
 
     def transform(self, x):
-        """
-        Transforms the data onto a lower dimensional space as to maintain maximum information
+        """ Transforms the data onto a lower dimensional space as to maintain maximum information.
+
         :param x: the data to be transformed
         :return: the data in a k-dimensional space where k is less than the original dimension of x
         """
@@ -49,8 +52,7 @@ class PrincipalComponentAnalysis:
         return self.components.T[:self.num_components, :] @ z
 
     def plot_variance(self):
-        """
-        Plot the amount of variance that each principal component explains.
+        """ Plot the amount of variance that each principal component explains.
         """
         # find the total of the variance
         total_variance = self.explained_variance.sum()
@@ -74,8 +76,8 @@ class PrincipalComponentAnalysis:
         plt.show()
 
     def plot_2d(self, x):
-        """
-        Plot a scatter with the orthogonal principal components.
+        """ Plot a scatter with the orthogonal principal components.
+
         :param x: the data to be plotted
         """
         # plot the scatter of x
@@ -97,8 +99,8 @@ class PrincipalComponentAnalysis:
 
     @staticmethod
     def covariance(z):
-        """
-        Calculate the covariance of matrix z.
+        """ Calculate the covariance of matrix z.
+
         :param z: the matrix for which we would like to find the covariance matrix
         :return: the covariance matrix
         """
@@ -128,6 +130,7 @@ if __name__ == '__main__':
     x, y = generate_data()
 
     pca = PrincipalComponentAnalysis(2)
+    print(x.shape)
     z = pca.fit_transform(x)
     pca.plot_2d(x)
     plt.scatter(z[0], z[1])

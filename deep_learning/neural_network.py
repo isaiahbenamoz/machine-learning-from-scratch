@@ -320,7 +320,7 @@ if __name__ == '__main__':
         # The desired mean values of the sample.
         mu = np.array([0.0, 0.0, 0.0])
 
-        a, b = 1.50, 1.49
+        a, b = 1.50, 1.
         # The desired covariance matrix.
         r = np.array([
             [a, b, b],
@@ -336,7 +336,7 @@ if __name__ == '__main__':
 
         return x, y
 
-    x_train, y_train = generate_data(200)
+    x_train, y_train = generate_data(1000)
     y_train = (1 / (1 + np.exp(-y_train))).reshape(1, -1)
 
     # x = np.array([
@@ -349,14 +349,25 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     plt.scatter(x_train[0], x_train[1], c=y_train[0])
-    plt.title('ground')
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.title('Training Data')
     plt.show()
 
-    print(type(x_train))
     nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'sigmoid'], 'mean_squared_error')
     nn.train(x_train, y_train, learning_rate=0.01)
-    y_pred = nn.predict(x_train)
 
-    plt.title('custom')
-    plt.scatter(x_train[0], x_train[1], c=y_pred[0])
+    x = np.linspace(-3, 3, 500)
+    y = np.linspace(-3, 3, 500)
+
+    x, y = np.meshgrid(x, y)
+
+    x = np.array([x.reshape(1, -1), y.reshape(1, -1)]).squeeze(axis=1)
+
+    y_pred = nn.predict(x)
+
+    plt.title('Neural Network Output for all x1 and x2')
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.scatter(x[0], x[1], c=y_pred[0])
     plt.show()
