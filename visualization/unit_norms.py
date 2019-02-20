@@ -2,14 +2,15 @@ from matplotlib import pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
+# get the subplots for plotting
+fig, ax = plt.subplots()
 
+# add labels for x1 and x2
 plt.xlabel('x1')
 plt.ylabel('x2')
 plt.axis('equal')
 
-# get the subplots for plotting
-fig, ax = plt.subplots()
-
+# set the aspect ratio for the graph to equal
 ax.set_aspect('equal', adjustable='box')
 
 ax.set_ylim([-1.2, 1.2])
@@ -29,7 +30,7 @@ def update(p):
     print('{:1.3f}'.format(p))
 
     # initialize values for when y is positive
-    x1 = np.concatenate((np.linspace(-1, 0.0, 200), np.linspace(0.00502513, 1, 199)), axis=0)
+    x1 = np.concatenate((np.linspace(-1, 0.0, 250), np.linspace(0.00502513, 1, 250)), axis=0)
 
     # find the corresponding x2 values
     x2 = (1 - (np.abs(x1) ** p)) ** (1 / p)
@@ -50,8 +51,11 @@ def update(p):
     return line, ax
 
 
+# create the p ranges for the graph
+ps = np.concatenate((np.logspace(-1.0, 2.0, 50), np.flip(np.logspace(-1.0, 2.0, 50))), axis=0)
+
 # create the animation
-anim = FuncAnimation(fig, update, frames=np.logspace(-1.0, 2.0, 30), interval=1)
+anim = FuncAnimation(fig, update, frames=ps, interval=1)
 anim.save('unit_norms.gif', dpi=150, writer='imagemagick')
 
 plt.show()
