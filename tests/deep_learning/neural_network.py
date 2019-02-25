@@ -1,8 +1,10 @@
 from deep_learning.neural_network import NeuralNetwork
+from data import generate
 import numpy as np
 from scipy.special import expit
 from sklearn.metrics import mean_squared_error
 import unittest
+
 expit = np.vectorize(expit)
 
 
@@ -59,6 +61,14 @@ class NeuralNetworkTester(unittest.TestCase):
         # TODO: implement tests for linear backward propagation
         pass
 
+    @staticmethod
+    def test_plot_model():
+        x = generate.normal(100, 20, 1.5, 1.45)
+        x_train, y_train = x[:, 0:5].T, x[:, 10:11].T
+        y_train = (1 / (1 + np.exp(-y_train)))
 
-if __name__ == '__main__':
-    unittest.main()
+        nn = NeuralNetwork([5, 10, 20, 50, 50, 20, 10, 1], [None, 'relu', 'relu', 'relu', 'relu', 'relu', 'relu', 'sigmoid'],
+                           'mean_squared_error')
+
+        nn.train(x_train, y_train, learning_rate=0.01)
+        nn.plot_model('../../graphs/neural_network.html')

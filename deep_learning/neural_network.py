@@ -1,5 +1,12 @@
 import numpy as np
 from scipy.special import expit
+import plotly.graph_objs as go
+from plotly.grid_objs import Grid, Column
+import plotly as py
+from plotly.offline import plot
+import matplotlib.cm as cm
+import pandas as pd
+
 sigmoid = np.vectorize(expit)
 
 
@@ -40,6 +47,7 @@ class NeuralNetwork:
 
         # crete dictionaries to store the model parameters and cache
         self.parameters = {}
+        self.parameter_history = []
         self.cache = {}
         self.gradients = {}
 
@@ -74,7 +82,7 @@ class NeuralNetwork:
 
         return a_l_prev
 
-    def train(self, x, y, epochs=1000, learning_rate=0.01):
+    def train(self, x, y, epochs=1000, learning_rate=0.01, cache_parameters=False):
         """ Trains the model on the data (x, y).
 
         :param x: the input training data that predicts y
@@ -93,6 +101,10 @@ class NeuralNetwork:
             if epoch % (epochs // 10) == 0:
                 # calculate the cost for all training examples
                 cost = self.loss_forward(self.predict(x), y, self.loss)
+
+                # if cache_parameters is true, save the parameters
+                if cache_parameters:
+                    self.parameter_history.append(self.parameters.copy())
 
                 # print out the cost for the current epoch
                 print('Epoch #', epoch, 'cost:', cost)
@@ -314,60 +326,86 @@ class NeuralNetwork:
         # return the three calculations
         return dw_l, db_l, da_l_prev
 
+    def plot_model(self, save_loc):
+        """ Plot the model architecture with weights in plot.ly.
 
-if __name__ == '__main__':
-    def generate_data(num_samples=100):
-        # The desired mean values of the sample.
-        mu = np.array([0.0, 0.0, 0.0])
+        :rtype: None
+        """
+        # TODO: rework
+        scale = [(0, 'red'), (1, 'blue')]
 
-        a, b = 1.50, 1.
-        # The desired covariance matrix.
-        r = np.array([
-            [a, b, b],
-            [b, a, b],
-            [b, b, a]
-        ])
+        # create a scatter plot that will be used to display the nodes
+        # TODO: work on the color scale
+        nodes = go.Scatter(x=[], y=[], text=[], mode='markers', hoverinfo='text', marker={
+            'color': '#3a3b3d', 'size': 10, 'colorscale': scale, 'colorbar': {
+                'title': 'Weight Colors',
+                'ticktext': ['-', '0', '+'],
+                'tickmode': 'array',
+                'tickvals': [2.6, 3, 3.4]
+                }
+        })
 
-        # Generate the random samples.
-        y = np.random.multivariate_normal(mu, r, size=num_samples)
+        print(max(self.nodes) * -0.15)
+        # iterate over all n layers and plot the nodes
+        for x in range(self.num_layers + 1):
+            # iterate over the number of nodes in layer x
+            for y_idx, y in zip(range(self.nodes[x]),
+                                np.linspace(-0.15 * self.nodes[x], 0.15 * self.nodes[x], self.nodes[x])):
+                # add the x and y coordinates
+                nodes['x'] += tuple([x])
+                nodes['y'] += tuple([y])
 
-        x = y[:, 0:2].T
-        y = y[:, 2].T
+                # add a text label to the node
+                nodes['text'] += tuple([str(self.activations[x]) + ' (' + str(x) + ', ' + str(y_idx + 1) + ')'])
 
-        return x, y
+        # define a function that creates an edge
+        def create_edge(x1, y1, x2, y2, weight, maximum, minimum):
 
-    x_train, y_train = generate_data(1000)
-    y_train = (1 / (1 + np.exp(-y_train))).reshape(1, -1)
+            # scale weight to value between 0 and 1
+            scaled_weight = (weight - minimum) / (maximum - minimum)
 
-    # x = np.array([
-    #     [0, 0, 1, 1],
-    #     [0, 1, 0, 1]
-    # ])
-    #
-    # y = np.array([[0, 1, 1, 0]])
+            # map the weight to a color on red-blue color scale
+            color = 'rgb' + str(tuple([i * 255 for i in cm.seismic(scaled_weight)]))
 
-    import matplotlib.pyplot as plt
+            # return the edge that connects (x1, y1) to (x2, y2)
+            return go.Scatter(x=[x1, x2], y=[y1, y2], line={'width': 0.35, 'color': color}, mode='lines')
 
-    plt.scatter(x_train[0], x_train[1], c=y_train[0])
-    plt.xlabel('x1')
-    plt.ylabel('x2')
-    plt.title('Training Data')
-    plt.show()
+        # define a list of the edges that will be plotted
+        edges = []
 
-    nn = NeuralNetwork([2, 20, 20, 1], [None, 'relu', 'relu', 'sigmoid'], 'mean_squared_error')
-    nn.train(x_train, y_train, learning_rate=0.01)
+        # iterate over each layer
+        for x1 in range(self.num_layers):
+            # find the maximum and minimum weight in the current layer
+            max_weight = np.max(self.parameters['w' + str(x1 + 1)])
+            min_weight = np.min(self.parameters['w' + str(x1 + 1)])
 
-    x = np.linspace(-3, 3, 500)
-    y = np.linspace(-3, 3, 500)
+            # set x2 to the value of the next layer
+            x2 = x1 + 1
 
-    x, y = np.meshgrid(x, y)
+            # iterate over the nodes in the current layer
+            for y1_idx, y1 in zip(range(self.nodes[x1]),
+                                  np.linspace(-0.15 * self.nodes[x1], 0.15 * self.nodes[x1], self.nodes[x1])):
+                # iterate over the nodes in the next layer
+                for y2_idx, y2 in zip(range(self.nodes[x2]),
+                                      np.linspace(-0.15 * self.nodes[x2], 0.15 * self.nodes[x2], self.nodes[x2])):
 
-    x = np.array([x.reshape(1, -1), y.reshape(1, -1)]).squeeze(axis=1)
+                    # create an edge that connects the the node at (x1, y1) to (x1, x2)
+                    edges.append(create_edge(x1, y1, x2, y2, self.parameters['w' + str(x1 + 1)][y2_idx, y1_idx],
+                                             max_weight, min_weight))
 
-    y_pred = nn.predict(x)
+        # create the layout for the current graph
+        layout = go.Layout(
+            title='Feedforward Neural Network Graph',
+            titlefont={'size': 16},
+            showlegend=False,
+            hovermode='closest',
+            xaxis={'showgrid': False, 'zeroline': False, 'showticklabels': False},
+            yaxis={'showgrid': False, 'zeroline': False, 'showticklabels': False}
+        )
 
-    plt.title('Neural Network Output for all x1 and x2')
-    plt.xlabel('x1')
-    plt.ylabel('x2')
-    plt.scatter(x[0], x[1], c=y_pred[0])
-    plt.show()
+        # create the figure
+        fig = go.Figure(data=[*edges, nodes], layout=layout)
+
+        if save_loc:
+            # plot the figure offline
+            plot(fig, filename=save_loc)
