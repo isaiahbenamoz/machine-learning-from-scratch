@@ -345,7 +345,6 @@ class NeuralNetwork:
                 }
         })
 
-        print(max(self.nodes) * -0.15)
         # iterate over all n layers and plot the nodes
         for x in range(self.num_layers + 1):
             # iterate over the number of nodes in layer x
