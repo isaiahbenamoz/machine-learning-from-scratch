@@ -32,8 +32,8 @@ class NeuralNetwork:
         if activations[0] is not None:
             raise RuntimeError('The activation function for the first layer should be None.')
 
-        if not set(activations).issubset({None, 'relu', 'sigmoid', 'tanh'}):
-            raise RuntimeError(str(set(activations) - {None, 'relu', 'sigmoid', 'tanh'}) +
+        if not set(activations).issubset({None, 'relu', 'leaky_relu', 'sigmoid', 'tanh'}):
+            raise RuntimeError(str(set(activations) - {None, 'relu', 'leaky_relu', 'sigmoid', 'tanh'}) +
                                ' is / are not valid activation functions.')
 
         if loss not in ['mean_squared_error', 'cross_entropy']:
@@ -197,6 +197,8 @@ class NeuralNetwork:
         :rtype: np.ndarray
         """
         if activation == 'relu':
+            return np.maximum(z_l, 0)
+        elif activation == 'leaky_relu':
             return np.where(z_l > 0, z_l, z_l * 0.01)
         elif activation == 'sigmoid':
             return sigmoid(z_l)
@@ -293,6 +295,10 @@ class NeuralNetwork:
         """
         if activation == 'relu':
             g = np.ones_like(z_l)
+            g[z_l < 0] = 0.0
+            return da_l * g
+        elif activation == 'leaky_relu':
+            g = np.ones_like(z_l)
             g[z_l < 0] = 0.01
             return da_l * g
         elif activation == 'sigmoid':
@@ -326,18 +332,17 @@ class NeuralNetwork:
         # return the three calculations
         return dw_l, db_l, da_l_prev
 
-    def plot_model(self, save_loc):
+    def plot_model(self, save_loc='../../graphs/neural_network.html', node_size=10, line_width=0.35, node_space=0.15):
         """ Plot the model architecture with weights in plot.ly.
 
         :rtype: None
         """
-        # TODO: rework
-        scale = [(0, 'red'), (1, 'blue')]
+        # create the color scale colors
+        scale = [(0, 'red'), (0.5, 'white'), (1, 'blue')]
 
         # create a scatter plot that will be used to display the nodes
-        # TODO: work on the color scale
         nodes = go.Scatter(x=[], y=[], text=[], mode='markers', hoverinfo='text', marker={
-            'color': '#3a3b3d', 'size': 10, 'colorscale': scale, 'colorbar': {
+            'color': '#3a3b3d', 'size': node_size, 'colorscale': scale, 'colorbar': {
                 'title': 'Weight Colors',
                 'ticktext': ['-', '0', '+'],
                 'tickmode': 'array',
@@ -349,7 +354,7 @@ class NeuralNetwork:
         for x in range(self.num_layers + 1):
             # iterate over the number of nodes in layer x
             for y_idx, y in zip(range(self.nodes[x]),
-                                np.linspace(-0.15 * self.nodes[x], 0.15 * self.nodes[x], self.nodes[x])):
+                                np.linspace(-node_space * self.nodes[x], node_space * self.nodes[x], self.nodes[x])):
                 # add the x and y coordinates
                 nodes['x'] += tuple([x])
                 nodes['y'] += tuple([y])
@@ -364,10 +369,10 @@ class NeuralNetwork:
             scaled_weight = (weight - minimum) / (maximum - minimum)
 
             # map the weight to a color on red-blue color scale
-            color = 'rgb' + str(tuple([i * 255 for i in cm.seismic(scaled_weight)]))
+            color = 'rgb' + str(tuple([i * 255 for i in cm.bwr(scaled_weight)[:-1]]))
 
             # return the edge that connects (x1, y1) to (x2, y2)
-            return go.Scatter(x=[x1, x2], y=[y1, y2], line={'width': 0.35, 'color': color}, mode='lines')
+            return go.Scatter(x=[x1, x2], y=[y1, y2], line={'width': line_width, 'color': color}, mode='lines')
 
         # define a list of the edges that will be plotted
         edges = []
@@ -383,10 +388,10 @@ class NeuralNetwork:
 
             # iterate over the nodes in the current layer
             for y1_idx, y1 in zip(range(self.nodes[x1]),
-                                  np.linspace(-0.15 * self.nodes[x1], 0.15 * self.nodes[x1], self.nodes[x1])):
+                                  np.linspace(-node_space * self.nodes[x1], node_space * self.nodes[x1], self.nodes[x1])):
                 # iterate over the nodes in the next layer
                 for y2_idx, y2 in zip(range(self.nodes[x2]),
-                                      np.linspace(-0.15 * self.nodes[x2], 0.15 * self.nodes[x2], self.nodes[x2])):
+                                      np.linspace(-node_space * self.nodes[x2], node_space * self.nodes[x2], self.nodes[x2])):
 
                     # create an edge that connects the the node at (x1, y1) to (x1, x2)
                     edges.append(create_edge(x1, y1, x2, y2, self.parameters['w' + str(x1 + 1)][y2_idx, y1_idx],
