@@ -26,8 +26,6 @@ def update(p):
     :param p: the norm of the current iteration
     :return: the line and ax of the new graph
     """
-    # print the current value for p
-    print('{:1.3f}'.format(p))
 
     # initialize values for when y is positive
     x1 = np.concatenate((np.linspace(-1, 0.0, 250), np.linspace(0.00502513, 1, 250)), axis=0)
