@@ -1,11 +1,8 @@
 import numpy as np
 from scipy.special import expit
 import plotly.graph_objs as go
-from plotly.grid_objs import Grid, Column
-import plotly as py
 from plotly.offline import plot
 import matplotlib.cm as cm
-import pandas as pd
 
 sigmoid = np.vectorize(expit)
 
