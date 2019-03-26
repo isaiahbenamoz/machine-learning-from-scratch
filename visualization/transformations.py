@@ -2,14 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from data import generate
-from math import tanh, cosh
 
 
 class TransformationVisualizer:
     """
     A class to organize grid transformations and create animations for them.
     """
-    def __init__(self, transformations, grid, lines, points):
+    def __init__(self, transformations, grid, lines):
+        """
+        :param transformations: a list of transformations to animate
+        :param grid: a 3D numpy array of grid lines
+        :param lines: a 3D numpy array of lines
+        """
 
         # initialize the transformations
         self.transformations = transformations
@@ -17,10 +21,16 @@ class TransformationVisualizer:
         # initialize the grid, lines and points
         self.grid = grid
         self.lines = lines
-        self.points = points
 
     @staticmethod
     def initialize_grid(start=-1.0, stop=1.0, num_lines=10, points_per_line=50):
+        """ Creates grid lines.
+        :param start: the minimum value where grid lines are created
+        :param stop: the maximum value where grid lines are created
+        :param num_lines: the number of grid lines
+        :param points_per_line: the number of points per line
+        :return: the created grid
+        """
 
         # initialize the grid
         grid = []
@@ -50,8 +60,17 @@ class TransformationVisualizer:
 
     @staticmethod
     def linear_transformation(W, points, num_frames):
+        """ Creates frames for a linear transformation.
+        :param W: the weight matrix
+        :param points: the points to be transformed
+        :param num_frames: the number of frames
+        :return: the generated frames
+        """
 
+        # if there are no points
         if points is None:
+
+            # return a None array
             return [None for _ in range(num_frames)]
 
         # initialize the frames list
@@ -71,8 +90,17 @@ class TransformationVisualizer:
 
     @staticmethod
     def shift_transformation(b, points, num_frames):
+        """ Creates frames a shift transformation.
+        :param b: the bias vector
+        :param points: the points to be transformed
+        :param num_frames: the number of frames
+        :return: the generated frames
+        """
 
+        # if the points array is None
         if points is None:
+
+            # return a None array
             return [None for _ in range(num_frames)]
 
         # initialize the frames list
@@ -89,8 +117,17 @@ class TransformationVisualizer:
 
     @staticmethod
     def nonlinear_transformation(function, points, num_frames):
+        """ Creates frames for a nonlinear transformation.
+        :param function: the function to be animated
+        :param points: the points to be transformed
+        :param num_frames: the number of frames
+        :return: the generated frames
+        """
 
+        # if the points array is None
         if points is None:
+
+            # return a None array
             return [None for _ in range(num_frames)]
 
         # vectorize the function
@@ -106,19 +143,25 @@ class TransformationVisualizer:
         for i in generate.sigmoid(num=num_frames):
 
             # save the current frame
-            frames.append(points * (1 - i) + i * final_points)
+            frames.append((1 - i) * points + i * final_points)
 
         # return the frames
         return frames
 
     @staticmethod
     def create_plot(title, plot_range):
+        """ Creates the plot to be animated.
+        :param title: the title of the plot
+        :param plot_range: the area of the plot shown
+        :return: the figure and axis of the plot
+        """
 
         # get the plot's figure and axis
         figure, axis = plt.subplots()
 
         # set the title of the plot
         plt.title(title)
+        axis.set_aspect('equal', 'box')
 
         # set the limits of the plot
         plt.ylim(*plot_range)
@@ -129,6 +172,13 @@ class TransformationVisualizer:
 
     @staticmethod
     def plot_line(axis, line, color, lw=0.5):
+        """ Plot a line of points.
+        :param axis: the axis to plot the line on
+        :param line: the line of points
+        :param color: the color of the line
+        :param lw: the width of the line
+        :return: the plotted line
+        """
 
         # plot the grid line
         plotted_line, = axis.plot(line[0], line[1], color=color, lw=lw)
@@ -136,25 +186,14 @@ class TransformationVisualizer:
         # return the plotted grid
         return plotted_line
 
-    @staticmethod
-    def plot_points(axis, points, color):
-
-        # initialize a list to store lines
-        plotted_points = []
-
-        # plot the grid line
-        plotted_line, = axis.scatter(points[0], points[1], color=color)
-
-        # save the line
-        plotted_points.append(plotted_line)
-
-        # return the plotted grid
-        return plotted_points
-
     def get_frames(self, num_frames):
+        """ Create the frames for the animation.
+        :param num_frames: the number of frames
+        :return: the grids to be animated
+        """
 
         # initialize the animation grids
-        animation_grids = [(self.grid, self.lines, self.points)]
+        animation_grids = [(self.grid, self.lines)]
 
         # iterate over each transformation for the grid
         for transformation in self.transformations:
@@ -163,36 +202,44 @@ class TransformationVisualizer:
             if callable(transformation):
                 grids = self.nonlinear_transformation(transformation, animation_grids[-1][0], num_frames)
                 lines = self.nonlinear_transformation(transformation, animation_grids[-1][1], num_frames)
-                points = self.nonlinear_transformation(transformation, animation_grids[-1][2], num_frames)
 
             # if the transformation is a shift
             elif transformation.shape == (2, 1):
                 grids = self.shift_transformation(transformation, animation_grids[-1][0], num_frames)
                 lines = self.shift_transformation(transformation, animation_grids[-1][1], num_frames)
-                points = self.shift_transformation(transformation, animation_grids[-1][2], num_frames)
 
             # if the transformation is linear
             else:
                 grids = self.linear_transformation(transformation, animation_grids[-1][0], num_frames)
                 lines = self.linear_transformation(transformation, animation_grids[-1][1], num_frames)
-                points = self.linear_transformation(transformation, animation_grids[-1][2], num_frames)
 
-            animation_grids.extend([(grid, line, point) for grid, line, point in zip(grids, lines, points)])
+            # add the grid line and lines to the animation grids
+            animation_grids.extend([(grid, line) for grid, line in zip(grids, lines)])
 
         return animation_grids
 
     def animate(self, title=None, plot_range=(-1.0, 1.0),
                 num_frames=30, dpi=150, save_loc='test.gif'):
+        """ Create and save the animation.
+        :param title: the title of the plot
+        :param plot_range: the dimensions of the plot
+        :param num_frames: the number of frames per transformation
+        :param dpi: the pixel density of the plot
+        :param save_loc: the save location
+        """
 
+        # create the frames to be animated
         frames = self.get_frames(num_frames)
 
-        # creat the plot
+        # create the plot
         figure, axis = self.create_plot(title, plot_range)
 
         # initialize the plotted grid list
         plotted_grid = []
 
+        # if the grid is defined
         if self.grid is not None:
+
             # iterate over each line in the grid
             for line in self.grid:
 
@@ -202,90 +249,43 @@ class TransformationVisualizer:
         # initialize plotted lines list
         plotted_lines = []
 
+        # if the lines are defined
         if self.lines is not None:
+
             # iterate over each line in this list of lines
             for line in self.lines:
 
                 # add the plotted line to the list
-                plotted_lines.append(self.plot_line(axis, line, None))
-
-        # initialize the plotted points list
-        plotted_points = []
-
-        if self.points is not None:
-            # iterate over each point in the points list
-            for points in self.points:
-
-                # add the scatter plot to the list
-                plotted_points.append(self.plot_points(axis, points, None))
+                plotted_lines.append(self.plot_line(axis, line, None, lw=2.0))
 
         # create the update function
         def update(curr_grid):
 
-            # iterate over each line
+            # if the plotted grid is not empty
             if plotted_grid:
+
+                # iterate over each line
                 for line, plotted_line in zip(curr_grid[0], plotted_grid):
 
                     # update the x and y data
                     plotted_line.set_xdata(line[0])
                     plotted_line.set_ydata(line[1])
 
+            # if the plotted lines is not empty
             if plotted_lines:
+
+                # iterate over each line
                 for line, plotted_line in zip(curr_grid[1], plotted_lines):
 
                     # update the x and y data
                     plotted_line.set_xdata(line[0])
                     plotted_line.set_ydata(line[1])
 
-            if plotted_points:
-                for points, plotted_points_ in zip(curr_grid[2], plotted_points):
-
-                    # update the x and y data
-                    plotted_points_.set_xdata(points[0])
-                    plotted_points_.set_ydata(points[1])
-
         # create animation to save
-        animation = FuncAnimation(figure, update, frames=frames, interval=50)
+        animation = FuncAnimation(figure, update, frames=[frames[0] for i in range(5)] + frames[::2] + [frames[-1] for i in range(5)], interval=75)
 
         # save the animation if specified
         if save_loc:
+
+            # save the gif
             animation.save(save_loc, dpi=dpi, writer='imagemagick')
-
-
-if __name__ == '__main__':
-
-    from deep_learning.neural_network import NeuralNetwork
-    from data import generate
-    from math import tanh
-
-    x1 = np.array([[i for i in np.linspace(-1, -0.5, 20)],
-                  [cosh(i) for i in np.linspace(-1, -0.5, 20)]])
-
-    x2 = np.array([[i for i in np.linspace(0.5, 1, 20)],
-                   [cosh(i) for i in np.linspace(0.5, 1, 20)]])
-
-    x = np.concatenate((x1, x2), axis=1)
-
-    y1 = np.zeros((2, x1.shape[1]))
-    y2 = np.ones((2, x2.shape[1]))
-
-    y = np.concatenate((y2, y1), axis=1)
-
-    nn = NeuralNetwork([2, 2, 2, 2], [None, 'tanh', 'tanh', 'tanh'])
-    nn.train(x, y)
-
-    ws = [nn.parameters['w' + str(i)] for i in range(1, 4)]
-    bs = [nn.parameters['b' + str(i)] for i in range(1, 4)]
-
-    t = []
-    for w, b in zip(ws, bs):
-        t.append(w)
-        t.append(b)
-        t.append(tanh)
-
-    grid_ = TransformationVisualizer.initialize_grid()
-    lines_ = [x1, x2]
-    points_ = None
-
-    gt = TransformationVisualizer(t, grid_, lines_, points_)
-    gt.animate()
