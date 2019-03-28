@@ -9,7 +9,7 @@ The models implemented here are for my own learning purposes and that of others.
 
 ## Demos
 
-### 2 Spiral Neural Network
+### [2 Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/2_spiral_neural_network.py)
 <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
 
 ### 3 Spiral Neural Network
