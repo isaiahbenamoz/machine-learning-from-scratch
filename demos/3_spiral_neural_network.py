@@ -63,4 +63,4 @@ grid_ = TransformationVisualizer.initialize_grid(start=-5.0, stop=5.0, num_lines
 lines_ = [x1, x2, x3]
 
 gt = TransformationVisualizer(t, grid_, lines_)
-gt.animate(plot_range=(-3, 3), num_frames=20, save_loc='../gifs/3_spiral_neural_network.gif')
+gt.animate(plot_range=(-3, 3), num_frames=20, save_loc='./results/3_spiral_neural_network.gif')
