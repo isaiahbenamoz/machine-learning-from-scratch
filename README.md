@@ -12,7 +12,7 @@ The models implemented here are for my own learning purposes and that of others.
 ### 2 Spiral Neural Network
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
-<\div>
+</div>
 
 ### 3 Spiral Neural Network
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/3_spiral_neural_network.gif" width="600" />
