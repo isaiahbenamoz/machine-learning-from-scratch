@@ -54,6 +54,6 @@ ps = np.concatenate((np.logspace(-1.0, 2.0, 50), np.flip(np.logspace(-1.0, 2.0, 
 
 # create the animation
 anim = FuncAnimation(fig, update, frames=ps, interval=1)
-anim.save('unit_norms.gif', dpi=150, writer='imagemagick')
+anim.save('./results/unit_norms.gif', dpi=150, writer='imagemagick')
 
 plt.show()
