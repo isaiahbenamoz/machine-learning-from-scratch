@@ -15,5 +15,8 @@ The models implemented here are for my own learning purposes and that of others.
 ### [Three Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/3_spiral_neural_network.py)
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/3_spiral_neural_network.gif" width="600" />
 
+### [Unit Norms](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/unit_norms.py)
+<img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/unit_norms.gif" width="600" />
+
 ## Inspiration
 The implementation of these models is inspired by [Deep Learning](https://www.deeplearningbook.org/), an outstanding textbook from Bengio and Goodfellow.
