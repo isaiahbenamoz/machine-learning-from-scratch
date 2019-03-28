@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/icon.png" width="48"> Machine Learning Models
+# <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/icon.png" width="48"> Machine Learning Models
 > A collection of machine learning models implemented from scratch
 
 ## Motivation
