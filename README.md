@@ -10,10 +10,10 @@ The models implemented here are for my own learning purposes and that of others.
 ## Demos
 
 ### 2 Spiral Neural Network
-<img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
+<img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
 
 ### 3 Spiral Neural Network
-<img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/3_spiral_neural_network.gif" width="600" />
+<img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/3_spiral_neural_network.gif" width="600" />
 
 ## Inspiration
 The implementation of these models is inspired by [Deep Learning](https://www.deeplearningbook.org/), an outstanding textbook from Bengio and Goodfellow.
