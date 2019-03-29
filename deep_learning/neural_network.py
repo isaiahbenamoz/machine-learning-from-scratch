@@ -329,7 +329,7 @@ class NeuralNetwork:
         # return the three calculations
         return dw_l, db_l, da_l_prev
 
-    def plot_model(self, save_loc='../../graphs/neural_network.html', node_size=10, line_width=0.35, node_space=0.15):
+    def plot_model(self, save_loc='./results/neural_network_graph.html', node_size=10, line_width=0.35, node_space=0.15):
         """ Plot the model architecture with weights in plot.ly.
 
         :rtype: None

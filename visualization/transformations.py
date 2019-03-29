@@ -149,10 +149,12 @@ class TransformationVisualizer:
         return frames
 
     @staticmethod
-    def create_plot(title, plot_range):
+    def create_plot(title, plot_range, x_ticks, y_ticks):
         """ Creates the plot to be animated.
         :param title: the title of the plot
         :param plot_range: the area of the plot shown
+        :param x_ticks: the tick marks for the x axis
+        :param y_ticks: the tick marks for the y axis
         :return: the figure and axis of the plot
         """
 
@@ -166,6 +168,16 @@ class TransformationVisualizer:
         # set the limits of the plot
         plt.ylim(*plot_range)
         plt.xlim(*plot_range)
+
+        # ticks are provided
+        if x_ticks is not None:
+            # plot the ticks
+            plt.xticks(x_ticks)
+
+        # if ticks are provided
+        if y_ticks is not None:
+            # plot the ticks
+            plt.yticks(y_ticks)
 
         # return the figure and axis
         return figure, axis
@@ -218,21 +230,25 @@ class TransformationVisualizer:
 
         return animation_grids
 
-    def animate(self, title=None, plot_range=(-1.0, 1.0),
-                num_frames=30, dpi=150, save_loc='test.gif'):
+    def animate(self, title=None, plot_range=(-1.0, 1.0), x_ticks=None, y_ticks=None,
+                num_frames=30, interval=75, dpi=150, still_frames=5, save_loc='test.gif'):
         """ Create and save the animation.
         :param title: the title of the plot
         :param plot_range: the dimensions of the plot
         :param num_frames: the number of frames per transformation
+        :param interval: the amount of time between each frames in ms
         :param dpi: the pixel density of the plot
+        :param still_frames: the number of still frames at the beginning and end of the animation
         :param save_loc: the save location
+        :param x_ticks: the tick marks for the x axis
+        :param y_ticks: the tick marks for the y axis
         """
 
         # create the frames to be animated
         frames = self.get_frames(num_frames)
 
         # create the plot
-        figure, axis = self.create_plot(title, plot_range)
+        figure, axis = self.create_plot(title, plot_range, x_ticks, y_ticks)
 
         # initialize the plotted grid list
         plotted_grid = []
@@ -281,8 +297,12 @@ class TransformationVisualizer:
                     plotted_line.set_xdata(line[0])
                     plotted_line.set_ydata(line[1])
 
+        # create the final frames
+        final_frames = [frames[0] for _ in range(still_frames)] + frames[::2] + \
+                       [frames[-1] for _ in range(still_frames)]
+
         # create animation to save
-        animation = FuncAnimation(figure, update, frames=[frames[0] for i in range(5)] + frames[::2] + [frames[-1] for i in range(5)], interval=75)
+        animation = FuncAnimation(figure, update, frames=final_frames, interval=interval)
 
         # save the animation if specified
         if save_loc:
