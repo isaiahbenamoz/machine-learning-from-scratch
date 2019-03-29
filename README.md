@@ -15,7 +15,7 @@ A graph of a of a 7 layer neural netwok.
 
 ### [Two Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/2_spiral_neural_network.py)
 A visualization of a 4 layer neural network trained to separate two spirals.
-<img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
+<img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="1000" />
 
 ### [Three Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/3_spiral_neural_network.py)
 A visualization of a 5 layer neural network trained to separate three spirals.
