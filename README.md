@@ -9,6 +9,10 @@ The models implemented here are for my own learning purposes and that of others.
 
 ## Demos
 
+### [Neural Network Graph](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/neural_network_graph.py)
+A graph of a of a 7 layer neural netwok.
+<img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/neural_network_graph.png" width="600" />
+
 ### [Two Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/2_spiral_neural_network.py)
 A visualization of a 4 layer neural network trained to separate two spirals.
 <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
