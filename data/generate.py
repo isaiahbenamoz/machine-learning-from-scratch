@@ -17,7 +17,7 @@ def sigmoid(start=-5.0, end=5.0, num=50):
         for i in np.linspace(start, end, num):
             yield 1 / (1 + exp(-i))
 
-
+        
 def spiral(start=0.0, end=3.14 * 1.5, mul=1.0, num=50):
         x = []
         y = []
