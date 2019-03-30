@@ -57,14 +57,22 @@ class LinearRegression:
         :param epochs: int
             The number of times our model iterates over the entire training set
         """
+
+        # initialize W
+        self.W = np.random.randn(x.shape[0], 1)
+
+        # TODO: remove
+        self.W = np.array([[-2.0]])
+
+        # iterate over the number of epochs
         for i in range(epochs):
 
             # add the weights and bias to the model history
-            self.history.append((self.W.copy(), self.b))
+            self.history.append(self.predict(x))
 
             # print one of ten cost evaluations
-            if i % (epochs // 10):
-                print('Epoch #' + str(i), 'cost =', self.cost(x))
+            if i % (epochs // 10) == 0:
+                print('Epoch #' + str(i), 'cost =', self.cost(x, y)[0][0])
 
             # compute the gradient with respect to w and b
             dw, db = self.gradient(x, y)
@@ -105,14 +113,22 @@ class LinearRegression:
         # get the subplots for plotting
         fig, ax = plt.subplots()
 
+        # set the aspect ratio for the graph to equal
+        ax.set_aspect('equal', adjustable='box')
+
+        # set the x and y limits
+        plt.ylim(-2, 2)
+        plt.xlim(-2, 2)
+
+        # set the x and y ticks
+        plt.xticks(np.linspace(-2, 2, 5))
+        plt.yticks(np.linspace(-2, 2, 5))
+
         # Plot a scatter that persists (isn't redrawn) and the initial line.
         sns.scatterplot(x[0], y[0])
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Linear Regression')
 
         # initialize a line with our first prediction
-        line, = ax.plot(x[0], self.history[0][0], 'r-')
+        line, = ax.plot(x[0], self.history[0][0], 'red')
 
         def update(pred):
             # Update the line and the axes (with a new xlabel). Return a tuple of
@@ -121,11 +137,11 @@ class LinearRegression:
             return line, ax
 
         # create the animation
-        anim = FuncAnimation(fig, update, frames=self.history, interval=50)
+        anim = FuncAnimation(fig, update, frames=self.history[::4], interval=50)
 
         # if there is a save location, save the animation
         if save_loc:
-            anim.save('line.gif', dpi=dpi, writer='imagemagick')
+            anim.save(save_loc, dpi=dpi, writer='imagemagick')
 
         # if show is true, show the plot
         if show:
@@ -147,11 +163,6 @@ class LinearRegression:
 
         # plot the line of prediction
         plt.plot(x[0], self.predict(x)[0], 'r-')
-
-        # add x and y labels and a title to the graph
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Linear Regression')
 
         # if show is true, show the plot
         if show:

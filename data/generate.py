@@ -2,14 +2,14 @@ import numpy as np
 from math import exp, pi, cos, sin
 
 
-def normal(num=100, d=3, a=1.0, b=0.5, c=0.0):
+def normal(num=100, dimensions=3, a=1.0, b=0.5, mu=None):
         # generate the means of the distribution
-        mu = np.array([c for _ in range(d)])
+        mu = np.array([0.0 for _ in range(dimensions)]) if mu is None else np.array(mu)
 
         # generate the desired covariance matrix
-        r = np.array([[a if c == r else b for c in range(d)] for r in range(d)])
+        r = np.array([[a if col == row else b for col in range(dimensions)] for row in range(dimensions)])
 
-        # Generate the random samples.
+        # Generate the random samples
         return np.random.multivariate_normal(mu, r, size=num)
 
 

@@ -5,16 +5,16 @@ from matplotlib.animation import FuncAnimation
 # get the subplots for plotting
 fig, ax = plt.subplots()
 
-# add labels for x1 and x2
-plt.xlabel('x1')
-plt.ylabel('x2')
-plt.axis('equal')
-
 # set the aspect ratio for the graph to equal
 ax.set_aspect('equal', adjustable='box')
 
-ax.set_ylim([-1.2, 1.2])
-ax.set_xlim([-1.2, 1.2])
+# set the x and y limits
+ax.set_ylim([-1.1, 1.1])
+ax.set_xlim([-1.1, 1.1])
+
+# add tick marks
+plt.xticks(np.linspace(-1, 1, 5))
+plt.yticks(np.linspace(-1, 1, 5))
 
 # plot the data
 line = ax.plot([0], [0], alpha=0.75)
@@ -41,9 +41,6 @@ def update(p):
     for l, a, b in zip(line, x1, x2):
         l.set_xdata(x1)
         l.set_ydata(x2)
-
-    # update the plots title
-    plt.title('All vectors with norm = 1 and p = {:1.3f}'.format(p))
 
     # return the plots updated values
     return line, ax
