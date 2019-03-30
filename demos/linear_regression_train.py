@@ -2,7 +2,7 @@ from regression.linear_regression import LinearRegression
 from data.generate import normal
 
 # create the correlated data
-data = normal(mu=[0.1, -0.3, 0.4], a=1.0, b=0.98)
+data = normal(mu=[0.0, 0.0, 0.0], a=1.0, b=0.99)
 
 # extract x and y
 x = data[:, 0].reshape(1, -1)

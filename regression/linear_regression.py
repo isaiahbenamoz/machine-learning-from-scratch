@@ -59,10 +59,7 @@ class LinearRegression:
         """
 
         # initialize W
-        self.W = np.random.randn(x.shape[0], 1)
-
-        # TODO: remove
-        self.W = np.array([[-2.0]])
+        self.W = np.zeros((x.shape[0], 1))
 
         # iterate over the number of epochs
         for i in range(epochs):
@@ -117,12 +114,12 @@ class LinearRegression:
         ax.set_aspect('equal', adjustable='box')
 
         # set the x and y limits
-        plt.ylim(-2, 2)
-        plt.xlim(-2, 2)
+        plt.ylim(-1, 1)
+        plt.xlim(-1, 1)
 
         # set the x and y ticks
-        plt.xticks(np.linspace(-2, 2, 5))
-        plt.yticks(np.linspace(-2, 2, 5))
+        plt.xticks(np.linspace(-1, 1, 5))
+        plt.yticks(np.linspace(-1, 1, 5))
 
         # Plot a scatter that persists (isn't redrawn) and the initial line.
         sns.scatterplot(x[0], y[0])

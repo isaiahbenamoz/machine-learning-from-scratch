@@ -65,7 +65,7 @@ class LogisticRegression:
             # if the current epoch number is a multiple of the number of epochs / 10
             if epoch % (self.epochs // 10) == 0:
                 # print the cost function with out current model
-                print('Epoch #' + str(epoch) + ' loss = ' + str(self.cost(x, y)))
+                print('Epoch #' + str(epoch) + ' cost = ' + str(self.cost(x, y)))
 
             # add the parameters to the parameters list
             self.parameters.append((self.W.copy(), self.b))
@@ -76,10 +76,6 @@ class LogisticRegression:
             # adjust W and b according to the gradient of the cost function
             self.W -= self.learning_rate * dW
             self.b -= self.learning_rate * db
-
-        print('\nW:', self.W)
-        print('b:', self.b)
-        print('c:', self.cost(x, y), '\n')
 
     def predict(self, x, W=None, b=None):
         """
@@ -156,17 +152,17 @@ class LogisticRegression:
             raise RuntimeError('In order to create this plot, x must be two dimensional.')
 
         # create a figure for saving
-        fig = plt.figure()
+        fig, ax = plt.subplots()
 
-        import pandas as pd
+        # set the aspect ratio for the graph to equal
+        ax.set_aspect('equal', adjustable='box')
 
-        df = pd.DataFrame()
-        df['x1'] = x[0, :]
-        df['x2'] = x[1, :]
-        df['y'] = y[0]
+        # set the x and y limits
+        plt.xlim(-1, 11)
+        plt.ylim(1, 13)
 
         # create a scatter plot with the given x and y coordinate data
-        sns.scatterplot(data=df, x='x1', y='x2', hue='y')
+        sns.scatterplot(x[0, :], x[1, :], hue=y[0], legend=None)
 
         # define the function to find x2 from x1
         def calc_x2(x1_):
@@ -179,11 +175,6 @@ class LogisticRegression:
 
         # plot the predicted sigmoid curve
         sns.lineplot(x1[0], calc_x2(x1)[0], color='green')
-
-        # label the x and y coordinates and add the title
-        plt.xlabel('x1')
-        plt.ylabel('x2')
-        plt.title('Logistic Regression')
 
         # show the plot if specified
         if show:
@@ -233,16 +224,3 @@ class LogisticRegression:
 
         if show:
             plt.show()
-
-
-if __name__ == '__main__':
-
-    from sklearn.datasets.samples_generator import make_blobs
-    x_, y_ = make_blobs(n_samples=200, centers=2, n_features=2, random_state=19, cluster_std=1.0)
-    x_ = x_.T.reshape(2, -1)
-    y_ = y_.reshape(1, -1)
-
-    lr = LogisticRegression(lambda_=0.0, learning_rate=0.1)
-    lr.fit(x_, y_)
-    lr.plot_2d(x_, y_)
-
