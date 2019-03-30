@@ -14,12 +14,20 @@ A graph of a of a 7 layer neural netwok.
 <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/neural_network_graph.png" width="600" />
 
 ### [Two Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/2_spiral_neural_network.py)
-A visualization of a 4 layer neural network trained to separate two spirals.
+A 4 layer neural network trained to separate two spirals.
 <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/2_spiral_neural_network.gif" width="600" />
 
 ### [Three Spiral Neural Network](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/3_spiral_neural_network.py)
-A visualization of a 5 layer neural network trained to separate three spirals.
+A 5 layer neural network trained to separate three spirals.
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/3_spiral_neural_network.gif" width="600" />
+
+### [Linear Regression](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/linear_regression_train.py)
+A linear regression model fitting a line.
+<img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/linear_regression_train.gif" width="600" />
+
+### [Logistic Classification](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/logistic_classification.py)
+A logistic classifier separates two clusters.
+<img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/logistic_classification.png" width="600" />
 
 ### [Unit Norms](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/unit_norms.py)
 A visualization of all vectors with unit p-norm.
