@@ -23,6 +23,7 @@ A 5 layer neural network trained to separate three spirals.
 
 ### [Linear Regression](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/linear_regression_train.py)
 A linear regression model fitting a line.
+
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/linear_regression_train.gif" width="600" />
 
 ### [Logistic Classification](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/logistic_classification.py)
