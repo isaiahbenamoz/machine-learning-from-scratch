@@ -6,6 +6,7 @@ The models implemented here are for my own learning purposes and that of others.
 
 ## Blog Posts
 1. [Linear Regression from Scratch](https://towardsdatascience.com/linear-regression-from-scratch-977cd3a1db16) - published in Towards Data Science
+2. [Neural Networks: why do they work so well? Part I](https://towardsdatascience.com/neural-networks-why-do-they-work-so-well-part-i-22f0d3690511) - published in Towards Data Science
 
 ## Demos
 
