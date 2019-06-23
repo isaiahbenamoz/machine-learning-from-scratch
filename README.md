@@ -2,7 +2,7 @@
 > A collection of machine learning models implemented from scratch
 
 ## Motivation
-The models implemented here are for my own learning purposes and that of others. They are not in any way intended for real world use.
+The models implemented here are for my own learning purposes and that of others.
 
 ## Blog Posts
 1. [Linear Regression from Scratch](https://towardsdatascience.com/linear-regression-from-scratch-977cd3a1db16) - published in Towards Data Science
