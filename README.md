@@ -32,12 +32,12 @@ A linear regression model fitting a line.
 
 ### [Logistic Classification](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/logistic_classification.py)
 A logistic classifier separates two clusters.
-
+<br/>
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/logistic_classification.png" width="600" />
 
 ### [Unit Norms](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/unit_norms.py)
 A visualization of all vectors with unit p-norm.
-
+<br/>
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/unit_norms.gif" width="600" />
 
 ## Inspiration
