@@ -29,7 +29,7 @@ A logistic classifier separates two clusters.
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/logistic_classification.png" width="600" />
 
 ### [Unit Norms](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/unit_norms.py)
-A visualization of all vectors with unit p-norm. Norms are used to regularize models.
+A visualization of all vectors with unit p-norm equal to 1. Norms are used to regularize models.
 <br/>
 <img style="text-align:center" src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/demos/results/unit_norms.gif" width="600" />
 
