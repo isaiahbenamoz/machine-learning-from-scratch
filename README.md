@@ -4,10 +4,7 @@
 # <img src="https://raw.githubusercontent.com/isaiahnields/machine-learning-models/master/icon.png" width="48"> Machine Learning From Scratch
 > A collection of machine learning models implemented from scratch
 
-## Motivation
-The models implemented here are for my own learning purposes and that of others.
-
-## Demos
+## Models / Demos
 
 ### [Neural Network Graph](https://github.com/isaiahnields/machine-learning-models/blob/master/demos/neural_network_graph.py)
 A graph of a 7 layer neural netwok.
